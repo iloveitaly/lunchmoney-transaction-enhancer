@@ -1,7 +1,3 @@
-from structlog_config import configure_logger
+from .cli import main
 
-logger = configure_logger()
-
-
-def main():
-    logger.info("Hello, Logs!")
+__all__ = ["main"]
