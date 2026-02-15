@@ -1,7 +1,7 @@
 import pytest
 from lunchable.models import TransactionObject
 from whenever import Instant
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 from lunchmoney_transaction_enhancer.enhancer import ExtractionRule, TransactionEnhancer
 
 @pytest.fixture

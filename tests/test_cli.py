@@ -1,7 +1,6 @@
 import pytest
 from click.testing import CliRunner
-from unittest.mock import patch, MagicMock
-from whenever import Instant
+from unittest.mock import patch
 from structlog.testing import capture_logs
 from lunchmoney_transaction_enhancer.cli import main_cmd
 

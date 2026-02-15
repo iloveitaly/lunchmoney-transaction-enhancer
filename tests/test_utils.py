@@ -1,7 +1,7 @@
 import pytest
 import requests
 import socket
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from tenacity import RetryError
 from structlog.testing import capture_logs
 from lunchmoney_transaction_enhancer.heartbeat import send_heartbeat
