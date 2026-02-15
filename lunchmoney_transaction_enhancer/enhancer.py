@@ -55,7 +55,7 @@ class TransactionEnhancer:
         
         # LunchMoney API uses date, so we'll fetch from the date of start_date
         # Whenever's Instant doesn't have a direct .date() but we can convert
-        transactions = self.lunch.get_transactions(start_date=start_date.to_utc().py_date())
+        transactions = self.lunch.get_transactions(start_date=start_date.py_datetime().date())
         
         log.info("fetched transactions", count=len(transactions))
         

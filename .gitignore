@@ -134,3 +134,4 @@ dmypy.json
 
 # i like having temporary files specified locally vs globally
 tmp/
+data/*

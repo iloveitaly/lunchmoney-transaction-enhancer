@@ -1,0 +1,2 @@
+- [ ] remove cron option, we should always wait for internet and check for heartbeat ENV
+- [ ] add --dry-run
