@@ -49,8 +49,7 @@ def test_cli_missing_token(runner):
     with capture_logs() as cap_logs:
         runner.invoke(main_cmd, ["--token", ""])
     assert any(
-        "lunchmoney_api_token is not set" in log.get("event", "")
-        for log in cap_logs
+        "lunchmoney_api_token is not set" in log.get("event", "") for log in cap_logs
     )
 
 
