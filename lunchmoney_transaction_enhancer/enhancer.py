@@ -48,9 +48,10 @@ class ExtractionRule(BaseModel):
 
 
 class TransactionEnhancer:
-    def __init__(self, api_token: str, rules: List[ExtractionRule]):
+    def __init__(self, api_token: str, rules: List[ExtractionRule], dry_run: bool = False):
         self.lunch = LunchMoney(access_token=api_token)
         self.rules = rules
+        self.dry_run = dry_run
 
     def enhance_transactions(self, start_date: Instant):
         log.info("fetching transactions", start_date=start_date)
@@ -86,9 +87,11 @@ class TransactionEnhancer:
                         id=tx.id,
                         updates=updates,
                         original_payee=tx.payee,
+                        dry_run=self.dry_run,
                     )
-                    update_obj = TransactionUpdateObject(**updates)
-                    self.lunch.update_transaction(tx.id, update_obj)
+                    if not self.dry_run:
+                        update_obj = TransactionUpdateObject(**updates)
+                        self.lunch.update_transaction(tx.id, update_obj)
                     updated_count += 1
 
         log.info("enhancement complete", updated_count=updated_count)
