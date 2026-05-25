@@ -1,8 +1,8 @@
 [project]
 name = "lunchmoney-transaction-enhancer"
 version = "0.1.0"
-description = ""
-keywords = []
+description = "Enrich Lunch Money transactions using regex extraction rules"
+keywords = ["lunchmoney", "personal-finance", "plaid", "automation"]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
