@@ -1,12 +1,11 @@
-import re
 import datetime
-import structlog
-from typing import List, Optional
-from pydantic import BaseModel
-from whenever import Instant
+import re
 
+import structlog
 from lunchable import LunchMoney
 from lunchable.models import TransactionObject, TransactionUpdateObject
+from pydantic import BaseModel
+from whenever import Instant
 
 log = structlog.get_logger()
 
@@ -18,7 +17,7 @@ class ExtractionRule(BaseModel):
     target_field: str  # 'payee', 'notes'
     template: str  # Template for the target field, e.g., "Code: {code}"
 
-    def _get_source_val(self, transaction: TransactionObject) -> Optional[str]:
+    def _get_source_val(self, transaction: TransactionObject) -> str | None:
         if self.source_field == "plaid_name":
             metadata = transaction.plaid_metadata
             if not metadata:
@@ -26,7 +25,7 @@ class ExtractionRule(BaseModel):
             return metadata.get("name")
         return getattr(transaction, self.source_field, None)
 
-    def apply(self, transaction: TransactionObject) -> Optional[dict]:
+    def apply(self, transaction: TransactionObject) -> dict | None:
         source_val = self._get_source_val(transaction)
         if not source_val:
             return None
@@ -57,7 +56,9 @@ class ExtractionRule(BaseModel):
 
 
 class TransactionEnhancer:
-    def __init__(self, api_token: str, rules: List[ExtractionRule], dry_run: bool = False):
+    def __init__(
+        self, api_token: str, rules: list[ExtractionRule], dry_run: bool = False
+    ):
         self.lunch = LunchMoney(access_token=api_token)
         self.rules = rules
         self.dry_run = dry_run
@@ -107,5 +108,9 @@ class TransactionEnhancer:
                         self.lunch.update_transaction(tx.id, update_obj)
                     updated_count += 1
 
-        log.info("enhancement complete", updated_count=updated_count, rule_matches=rule_match_counts)
+        log.info(
+            "enhancement complete",
+            updated_count=updated_count,
+            rule_matches=rule_match_counts,
+        )
         return updated_count

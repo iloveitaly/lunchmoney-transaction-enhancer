@@ -1,9 +1,10 @@
+from unittest.mock import patch
+
 import pytest
 import requests
-import socket
-from unittest.mock import patch
-from tenacity import RetryError
 from structlog.testing import capture_logs
+from tenacity import RetryError
+
 from lunchmoney_transaction_enhancer.heartbeat import send_heartbeat
 from lunchmoney_transaction_enhancer.internet import (
     is_internet_connected,
@@ -37,8 +38,8 @@ def test_is_internet_connected_true():
 def test_is_internet_connected_false():
     with patch("socket.socket") as mock_sock:
         # Use socket.error which is what the code catches
-        mock_sock.return_value.__enter__.return_value.connect.side_effect = (
-            socket.error("no internet")
+        mock_sock.return_value.__enter__.return_value.connect.side_effect = OSError(
+            "no internet"
         )
         assert is_internet_connected() is False
 

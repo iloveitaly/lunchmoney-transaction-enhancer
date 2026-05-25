@@ -1,7 +1,8 @@
 import pytest
 from whenever import Instant
-from lunchmoney_transaction_enhancer.state import get_last_checked, set_last_checked
+
 import lunchmoney_transaction_enhancer.state
+from lunchmoney_transaction_enhancer.state import get_last_checked, set_last_checked
 
 
 @pytest.fixture

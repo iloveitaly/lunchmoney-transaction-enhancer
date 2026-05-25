@@ -15,7 +15,9 @@ log = structlog.get_logger()
 @click.option("--token", default=LUNCHMONEY_API_TOKEN, help="LunchMoney API Token")
 @click.option("--lookback", default=180, help="Days to look back if no state found")
 @click.option("--cron", is_flag=True, help="Wait for internet and send heartbeat")
-@click.option("--dry-run", is_flag=True, help="Log what would be updated without making changes")
+@click.option(
+    "--dry-run", is_flag=True, help="Log what would be updated without making changes"
+)
 def main_cmd(token, lookback, cron, dry_run):
     if not token:
         log.error("lunchmoney_api_token is not set")
@@ -30,7 +32,9 @@ def main_cmd(token, lookback, cron, dry_run):
         last_checked = Instant.now().add(hours=-lookback * 24)
         log.info("no last checked state, using lookback", lookback_days=lookback)
 
-    enhancer = TransactionEnhancer(api_token=token, rules=EXTRACTION_RULES, dry_run=dry_run)
+    enhancer = TransactionEnhancer(
+        api_token=token, rules=EXTRACTION_RULES, dry_run=dry_run
+    )
 
     # We record the current time before starting to ensure we don't miss anything
     # that happens during the run in the next cycle.

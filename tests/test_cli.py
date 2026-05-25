@@ -1,7 +1,9 @@
+from unittest.mock import patch
+
 import pytest
 from click.testing import CliRunner
-from unittest.mock import patch
 from structlog.testing import capture_logs
+
 from lunchmoney_transaction_enhancer.cli import main_cmd
 
 
@@ -44,14 +46,12 @@ def test_cli_cron_mode(runner):
 
 
 def test_cli_missing_token(runner):
-    # Unset token to test error handling
-    with patch("lunchmoney_transaction_enhancer.cli.LUNCHMONEY_API_TOKEN", None):
-        with capture_logs() as cap_logs:
-            runner.invoke(main_cmd, [])
-        assert any(
-            "lunchmoney_api_token is not set" in log.get("event", "")
-            for log in cap_logs
-        )
+    with capture_logs() as cap_logs:
+        runner.invoke(main_cmd, ["--token", ""])
+    assert any(
+        "lunchmoney_api_token is not set" in log.get("event", "")
+        for log in cap_logs
+    )
 
 
 def test_cli_error_handling(runner):

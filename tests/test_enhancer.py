@@ -1,8 +1,10 @@
+from unittest.mock import patch
+
 import pytest
 from lunchable.models import TransactionObject
-from whenever import Instant
-from unittest.mock import patch
 from structlog.testing import capture_logs
+from whenever import Instant
+
 from lunchmoney_transaction_enhancer.enhancer import ExtractionRule, TransactionEnhancer
 
 

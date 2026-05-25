@@ -1,4 +1,5 @@
 import os
+
 from .enhancer import ExtractionRule
 
 LUNCHMONEY_API_TOKEN = os.getenv("LUNCH_MONEY_API_KEY")

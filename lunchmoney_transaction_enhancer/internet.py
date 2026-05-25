@@ -1,4 +1,5 @@
 import socket
+
 import backoff
 import structlog
 
@@ -23,5 +24,5 @@ def is_internet_connected():
         with socket.socket(socket.AF_INET) as s:
             s.connect(("google.com", 80))
             return True
-    except socket.error:
+    except OSError:
         return False

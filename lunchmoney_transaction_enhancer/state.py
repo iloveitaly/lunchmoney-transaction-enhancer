@@ -1,5 +1,6 @@
-from whenever import Instant
 from pathlib import Path
+
+from whenever import Instant
 
 STATE_DIR = Path("data")
 STATE_FILE = STATE_DIR / "last_checked.txt"
