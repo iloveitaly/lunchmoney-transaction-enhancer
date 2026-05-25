@@ -13,7 +13,7 @@ log = structlog.get_logger()
 
 @click.command()
 @click.option("--token", default=LUNCHMONEY_API_TOKEN, help="LunchMoney API Token")
-@click.option("--lookback", default=7, help="Days to look back if no state found")
+@click.option("--lookback", default=180, help="Days to look back if no state found")
 @click.option("--cron", is_flag=True, help="Wait for internet and send heartbeat")
 @click.option("--dry-run", is_flag=True, help="Log what would be updated without making changes")
 def main_cmd(token, lookback, cron, dry_run):

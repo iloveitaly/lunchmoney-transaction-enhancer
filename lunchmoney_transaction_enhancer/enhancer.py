@@ -1,4 +1,5 @@
 import re
+import datetime
 import structlog
 from typing import List, Optional
 from pydantic import BaseModel
@@ -17,8 +18,16 @@ class ExtractionRule(BaseModel):
     target_field: str  # 'payee', 'notes'
     template: str  # Template for the target field, e.g., "Code: {code}"
 
+    def _get_source_val(self, transaction: TransactionObject) -> Optional[str]:
+        if self.source_field == "plaid_name":
+            metadata = transaction.plaid_metadata
+            if not metadata:
+                return None
+            return metadata.get("name")
+        return getattr(transaction, self.source_field, None)
+
     def apply(self, transaction: TransactionObject) -> Optional[dict]:
-        source_val = getattr(transaction, self.source_field, None)
+        source_val = self._get_source_val(transaction)
         if not source_val:
             return None
 
@@ -59,17 +68,21 @@ class TransactionEnhancer:
         # LunchMoney API uses date, so we'll fetch from the date of start_date
         # Whenever's Instant doesn't have a direct .date() but we can convert
         transactions = self.lunch.get_transactions(
-            start_date=start_date.py_datetime().date()
+            start_date=start_date.py_datetime().date(),
+            end_date=datetime.date.today(),
         )
 
         log.info("fetched transactions", count=len(transactions))
 
         updated_count = 0
+        rule_match_counts = {rule.name: 0 for rule in self.rules}
+
         for tx in transactions:
             updates = {}
             for rule in self.rules:
                 result = rule.apply(tx)
                 if result:
+                    rule_match_counts[rule.name] += 1
                     updates.update(result)
 
             if updates:
@@ -94,5 +107,5 @@ class TransactionEnhancer:
                         self.lunch.update_transaction(tx.id, update_obj)
                     updated_count += 1
 
-        log.info("enhancement complete", updated_count=updated_count)
+        log.info("enhancement complete", updated_count=updated_count, rule_matches=rule_match_counts)
         return updated_count

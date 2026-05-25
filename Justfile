@@ -62,6 +62,7 @@ clean:
     rm -rf *.egg-info .venv || true
     find . -type f -name "*.pyc" -delete
     find . -type d -name "__pycache__" -delete || true
+    rm -f data/last_checked.txt
 
 # Update copier template
 update_from_upstream_template:
