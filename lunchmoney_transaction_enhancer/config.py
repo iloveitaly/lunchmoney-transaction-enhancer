@@ -11,7 +11,7 @@ EXTRACTION_RULES = [
         source_field="original_name",
         pattern=r"AIRBNB \* (?P<code>[A-Z0-9]{10})",
         target_field="notes",
-        template="Airbnb Code: {code}"
+        template="Airbnb Code: {code}",
     ),
     # Add more rules here
 ]

@@ -7,6 +7,7 @@ log = structlog.get_logger()
 # 8 hours, in case the internet goes down overnight
 MAX_WAIT_TIME = 60 * 60 * 8
 
+
 @backoff.on_exception(backoff.expo, Exception, max_time=MAX_WAIT_TIME)
 def wait_for_internet_connection():
     if is_internet_connected():
@@ -15,6 +16,7 @@ def wait_for_internet_connection():
     log.info("no internet connection, retrying...")
     # raise a generic py exception to trigger a retry
     raise Exception("no internet connection")
+
 
 def is_internet_connected():
     try:

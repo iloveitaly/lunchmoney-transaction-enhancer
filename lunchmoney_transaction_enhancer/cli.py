@@ -53,7 +53,7 @@ def main():
     # Configure structlog before running
     import structlog_config
 
-    structlog_config.configure()
+    structlog_config.configure_logger()
 
     main_cmd()
 
