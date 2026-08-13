@@ -27,22 +27,22 @@ def test_cli_basic_run(runner):
 
 
 def test_cli_cron_mode(runner):
-    with patch("lunchmoney_transaction_enhancer.cli.TransactionEnhancer"):
-        with patch(
+    with (
+        patch("lunchmoney_transaction_enhancer.cli.TransactionEnhancer"),
+        patch(
             "lunchmoney_transaction_enhancer.cli.wait_for_internet_connection"
-        ) as mock_wait:
-            with patch(
-                "lunchmoney_transaction_enhancer.cli.send_heartbeat"
-            ) as mock_heartbeat:
-                with patch(
-                    "lunchmoney_transaction_enhancer.cli.HEARTBEAT_URL",
-                    "http://heartbeat.com",
-                ):
-                    result = runner.invoke(main_cmd, ["--token", "fake", "--cron"])
+        ) as mock_wait,
+        patch("lunchmoney_transaction_enhancer.cli.send_heartbeat") as mock_heartbeat,
+        patch(
+            "lunchmoney_transaction_enhancer.cli.HEARTBEAT_URL",
+            "http://heartbeat.com",
+        ),
+    ):
+        result = runner.invoke(main_cmd, ["--token", "fake", "--cron"])
 
-                    assert result.exit_code == 0
-                    mock_wait.assert_called_once()
-                    mock_heartbeat.assert_called_once_with("http://heartbeat.com")
+        assert result.exit_code == 0
+        mock_wait.assert_called_once()
+        mock_heartbeat.assert_called_once_with("http://heartbeat.com")
 
 
 def test_cli_missing_token(runner):

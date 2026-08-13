@@ -52,7 +52,7 @@ def main_cmd(token, lookback, cron, dry_run):
         log.exception("failed to enhance transactions", error=str(e))
         if cron:
             # Re-raise in cron mode to ensure the job fails visibly
-            raise e
+            raise
 
 
 def main():
