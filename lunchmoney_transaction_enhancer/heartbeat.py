@@ -23,4 +23,4 @@ def send_heartbeat(url: str) -> None:
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
         log.error("heartbeat failed", url=url, error=str(e))
-        raise e
+        raise

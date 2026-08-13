@@ -22,9 +22,8 @@ def test_send_heartbeat_success():
 def test_send_heartbeat_failure():
     with patch("requests.get") as mock_get:
         mock_get.side_effect = requests.exceptions.RequestException("fail")
-        with capture_logs() as cap_logs:
-            with pytest.raises(RetryError):
-                send_heartbeat("http://test.com")
+        with capture_logs() as cap_logs, pytest.raises(RetryError):
+            send_heartbeat("http://test.com")
         assert any("heartbeat failed" in log.get("event", "") for log in cap_logs)
 
 

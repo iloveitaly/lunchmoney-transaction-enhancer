@@ -61,10 +61,10 @@ Rules are defined in `lunchmoney_transaction_enhancer/config.py`:
 ```python
 ExtractionRule(
     name="Airbnb Code",
-    source_field="plaid_name",          # field to match against
+    source_field="plaid_name",  # field to match against
     pattern=r"AIRBNB \* (?P<code>[A-Z0-9]{10})",
-    target_field="notes",               # field to write to
-    template="Airbnb Code: {code}",     # use named capture groups as variables
+    target_field="notes",  # field to write to
+    template="Airbnb Code: {code}",  # use named capture groups as variables
 )
 ```
 

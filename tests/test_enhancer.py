@@ -46,7 +46,7 @@ def test_transaction_enhancer_updates(mock_transaction):
         mock_lm.update_transaction.assert_called_once()
 
         # Verify update object
-        args, kwargs = mock_lm.update_transaction.call_args
+        args, _kwargs = mock_lm.update_transaction.call_args
         assert args[0] == 123
         assert args[1].notes == "Code: HMFSTBA35Y"
 

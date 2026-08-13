@@ -9,14 +9,17 @@ log = structlog.get_logger()
 MAX_WAIT_TIME = 60 * 60 * 8
 
 
-@backoff.on_exception(backoff.expo, Exception, max_time=MAX_WAIT_TIME)
+class NoInternetConnectionError(Exception):
+    """Raised when a connectivity check fails and a retry should be attempted."""
+
+
+@backoff.on_exception(backoff.expo, NoInternetConnectionError, max_time=MAX_WAIT_TIME)
 def wait_for_internet_connection():
     if is_internet_connected():
         return
 
     log.info("no internet connection, retrying...")
-    # raise a generic py exception to trigger a retry
-    raise Exception("no internet connection")
+    raise NoInternetConnectionError("no internet connection")
 
 
 def is_internet_connected():

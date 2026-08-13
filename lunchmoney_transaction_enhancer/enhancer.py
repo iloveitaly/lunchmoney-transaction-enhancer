@@ -70,7 +70,7 @@ class TransactionEnhancer:
         # Whenever's Instant doesn't have a direct .date() but we can convert
         transactions = self.lunch.get_transactions(
             start_date=start_date.py_datetime().date(),
-            end_date=datetime.date.today(),
+            end_date=datetime.datetime.now(tz=datetime.UTC).date(),
         )
 
         log.info("fetched transactions", count=len(transactions))

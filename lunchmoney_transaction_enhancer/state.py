@@ -13,7 +13,7 @@ def get_last_checked() -> Instant | None:
     try:
         timestamp = STATE_FILE.read_text().strip()
         return Instant.parse_iso(timestamp)
-    except Exception:
+    except (OSError, ValueError):
         return None
 
 
