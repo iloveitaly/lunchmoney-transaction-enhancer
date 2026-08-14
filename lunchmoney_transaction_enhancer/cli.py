@@ -11,9 +11,17 @@ from .state import get_last_checked, set_last_checked
 log = structlog.get_logger()
 
 
+DEFAULT_LOOKBACK_DAYS = 180
+
+
 @click.command()
 @click.option("--token", default=LUNCHMONEY_API_TOKEN, help="LunchMoney API Token")
-@click.option("--lookback", default=180, help="Days to look back if no state found")
+@click.option(
+    "--lookback",
+    default=None,
+    type=int,
+    help="Days to look back (overrides persisted last checked state)",
+)
 @click.option("--cron", is_flag=True, help="Wait for internet and send heartbeat")
 @click.option(
     "--dry-run", is_flag=True, help="Log what would be updated without making changes"
@@ -27,10 +35,17 @@ def main_cmd(token, lookback, cron, dry_run):
         log.info("running in cron mode, waiting for internet")
         wait_for_internet_connection()
 
-    last_checked = get_last_checked()
-    if not last_checked:
+    if lookback is not None:
         last_checked = Instant.now().add(hours=-lookback * 24)
-        log.info("no last checked state, using lookback", lookback_days=lookback)
+        log.info("using lookback, overriding last checked state", lookback_days=lookback)
+    else:
+        last_checked = get_last_checked()
+        if not last_checked:
+            last_checked = Instant.now().add(hours=-DEFAULT_LOOKBACK_DAYS * 24)
+            log.info(
+                "no last checked state, using default lookback",
+                lookback_days=DEFAULT_LOOKBACK_DAYS,
+            )
 
     enhancer = TransactionEnhancer(
         api_token=token, rules=EXTRACTION_RULES, dry_run=dry_run

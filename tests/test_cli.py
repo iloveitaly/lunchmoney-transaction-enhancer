@@ -26,6 +26,41 @@ def test_cli_basic_run(runner):
         mock_enhancer_inst.enhance_transactions.assert_called_once()
 
 
+def test_cli_lookback_overrides_persisted_state(runner):
+    with (
+        patch("lunchmoney_transaction_enhancer.cli.TransactionEnhancer") as mock_enhancer,
+        patch("lunchmoney_transaction_enhancer.cli.get_last_checked") as mock_get_state,
+    ):
+        mock_enhancer_inst = mock_enhancer.return_value
+        mock_get_state.return_value = "persisted_state_timestamp"
+
+        result = runner.invoke(main_cmd, ["--token", "fake_token", "--lookback", "10"])
+
+        assert result.exit_code == 0
+        mock_get_state.assert_not_called()
+        mock_enhancer_inst.enhance_transactions.assert_called_once()
+        start_date = mock_enhancer_inst.enhance_transactions.call_args[1]["start_date"]
+        assert start_date != "persisted_state_timestamp"
+
+
+def test_cli_uses_persisted_state_when_lookback_omitted(runner):
+    with (
+        patch("lunchmoney_transaction_enhancer.cli.TransactionEnhancer") as mock_enhancer,
+        patch("lunchmoney_transaction_enhancer.cli.get_last_checked") as mock_get_state,
+    ):
+        mock_enhancer_inst = mock_enhancer.return_value
+        mock_get_state.return_value = "persisted_state_timestamp"
+
+        result = runner.invoke(main_cmd, ["--token", "fake_token"])
+
+        assert result.exit_code == 0
+        mock_get_state.assert_called_once()
+        mock_enhancer_inst.enhance_transactions.assert_called_once_with(
+            start_date="persisted_state_timestamp"
+        )
+
+
+
 def test_cli_cron_mode(runner):
     with (
         patch("lunchmoney_transaction_enhancer.cli.TransactionEnhancer"),

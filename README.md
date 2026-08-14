@@ -40,7 +40,7 @@ uvx lunchmoney-transaction-enhancer --cron
 
 ### Options
 
-- `--lookback N` — days to look back when no prior state exists (default: 180)
+- `--lookback N` — days to look back, overriding persisted state (default: 180 if no state exists)
 - `--dry-run` — log what would be updated without making any changes
 - `--cron` — wait for internet connectivity before running, send heartbeat on success
 
