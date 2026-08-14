@@ -1,7 +1,7 @@
 import socket
 
-import backoff
 import structlog
+from tenacity import retry, retry_if_exception_type, stop_after_delay, wait_exponential
 
 log = structlog.get_logger()
 
@@ -13,7 +13,12 @@ class NoInternetConnectionError(Exception):
     """Raised when a connectivity check fails and a retry should be attempted."""
 
 
-@backoff.on_exception(backoff.expo, NoInternetConnectionError, max_time=MAX_WAIT_TIME)
+@retry(
+    retry=retry_if_exception_type(NoInternetConnectionError),
+    stop=stop_after_delay(MAX_WAIT_TIME),
+    wait=wait_exponential(multiplier=1, min=2, max=60),
+    reraise=True,
+)
 def wait_for_internet_connection():
     if is_internet_connected():
         return

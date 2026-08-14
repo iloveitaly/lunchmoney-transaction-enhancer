@@ -3,10 +3,11 @@ from unittest.mock import patch
 import pytest
 import requests
 from structlog.testing import capture_logs
-from tenacity import RetryError
+from tenacity import RetryError, stop_after_attempt, wait_none
 
 from lunchmoney_transaction_enhancer.heartbeat import send_heartbeat
 from lunchmoney_transaction_enhancer.internet import (
+    NoInternetConnectionError,
     is_internet_connected,
     wait_for_internet_connection,
 )
@@ -50,3 +51,26 @@ def test_wait_for_internet_connection_immediate():
         mock_check.return_value = True
         wait_for_internet_connection()
         mock_check.assert_called_once()
+
+
+def test_wait_for_internet_connection_retries_and_succeeds():
+    with patch(
+        "lunchmoney_transaction_enhancer.internet.is_internet_connected",
+        side_effect=[False, True],
+    ) as mock_check:
+        wait_for_internet_connection.retry_with(wait=wait_none())()
+        assert mock_check.call_count == 2
+
+
+def test_wait_for_internet_connection_fails_after_retries():
+    with patch(
+        "lunchmoney_transaction_enhancer.internet.is_internet_connected",
+        return_value=False,
+    ) as mock_check:
+        with pytest.raises(NoInternetConnectionError):
+            wait_for_internet_connection.retry_with(
+                stop=stop_after_attempt(2),
+                wait=wait_none(),
+            )()
+        assert mock_check.call_count == 2
+

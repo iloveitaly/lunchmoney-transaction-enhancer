@@ -6,7 +6,6 @@ keywords = ["lunchmoney", "personal-finance", "plaid", "automation"]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "backoff>=2.2.1",
     "click>=8.4.2",
     "lunchable>=1.4.3",
     "requests>=2.32.5",
