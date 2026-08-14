@@ -56,9 +56,7 @@ def test_transaction_enhancer_uses_next_day_for_same_day_run():
     current_time = Instant.from_utc(2024, 1, 1, 12)
 
     with (
-        patch(
-            "lunchmoney_transaction_enhancer.enhancer.LunchMoney"
-        ) as mock_lm_class,
+        patch("lunchmoney_transaction_enhancer.enhancer.LunchMoney") as mock_lm_class,
         patch("lunchmoney_transaction_enhancer.enhancer.Instant") as mock_instant,
     ):
         mock_lm = mock_lm_class.return_value
@@ -156,7 +154,7 @@ def test_transaction_enhancer_preserves_notes_and_applies_other_updates(
 
         assert count == 1
         mock_lm.update_transaction.assert_called_once()
-        args, kwargs = mock_lm.update_transaction.call_args
+        args, _kwargs = mock_lm.update_transaction.call_args
         assert args[0] == 123
         assert args[1].payee == "Airbnb stay"
         assert args[1].notes is None
