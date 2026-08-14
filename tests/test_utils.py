@@ -73,4 +73,3 @@ def test_wait_for_internet_connection_fails_after_retries():
                 wait=wait_none(),
             )()
         assert mock_check.call_count == 2
-

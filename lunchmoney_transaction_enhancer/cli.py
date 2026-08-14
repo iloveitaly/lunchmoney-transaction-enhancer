@@ -37,7 +37,9 @@ def main_cmd(token, lookback, cron, dry_run):
 
     if lookback is not None:
         last_checked = Instant.now().add(hours=-lookback * 24)
-        log.info("using lookback, overriding last checked state", lookback_days=lookback)
+        log.info(
+            "using lookback, overriding last checked state", lookback_days=lookback
+        )
     else:
         last_checked = get_last_checked()
         if not last_checked:

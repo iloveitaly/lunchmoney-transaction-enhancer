@@ -200,13 +200,17 @@ def test_capital_one_travel_rules(
     ("descriptor", "expected_notes"),
     [
         (
-            "DEPOSIT DIVIDEND ANNUAL PERCENTAGE YIELD EARNED 4.30% "
-            "FOR PERIOD FROM 02/01/26 THRU 02/28/26",
+            (
+                "DEPOSIT DIVIDEND ANNUAL PERCENTAGE YIELD EARNED 4.30% "
+                "FOR PERIOD FROM 02/01/26 THRU 02/28/26"
+            ),
             "Interest: 4.30% APY (02/01/26 to 02/28/26)",
         ),
         (
-            "WITHDRAWAL ACH WISE US INC TYPE: WISE ID: 9453233521 "
-            "DATA: 91309152 CO: WISE US INC",
+            (
+                "WITHDRAWAL ACH WISE US INC TYPE: WISE ID: 9453233521 "
+                "DATA: 91309152 CO: WISE US INC"
+            ),
             "Wise transfer: 91309152",
         ),
     ],

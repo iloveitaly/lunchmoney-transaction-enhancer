@@ -28,7 +28,9 @@ def test_cli_basic_run(runner):
 
 def test_cli_lookback_overrides_persisted_state(runner):
     with (
-        patch("lunchmoney_transaction_enhancer.cli.TransactionEnhancer") as mock_enhancer,
+        patch(
+            "lunchmoney_transaction_enhancer.cli.TransactionEnhancer"
+        ) as mock_enhancer,
         patch("lunchmoney_transaction_enhancer.cli.get_last_checked") as mock_get_state,
     ):
         mock_enhancer_inst = mock_enhancer.return_value
@@ -45,7 +47,9 @@ def test_cli_lookback_overrides_persisted_state(runner):
 
 def test_cli_uses_persisted_state_when_lookback_omitted(runner):
     with (
-        patch("lunchmoney_transaction_enhancer.cli.TransactionEnhancer") as mock_enhancer,
+        patch(
+            "lunchmoney_transaction_enhancer.cli.TransactionEnhancer"
+        ) as mock_enhancer,
         patch("lunchmoney_transaction_enhancer.cli.get_last_checked") as mock_get_state,
     ):
         mock_enhancer_inst = mock_enhancer.return_value
@@ -58,7 +62,6 @@ def test_cli_uses_persisted_state_when_lookback_omitted(runner):
         mock_enhancer_inst.enhance_transactions.assert_called_once_with(
             start_date="persisted_state_timestamp"
         )
-
 
 
 def test_cli_cron_mode(runner):
