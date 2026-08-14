@@ -165,10 +165,10 @@ def test_transaction_enhancer_preserves_notes_and_applies_other_updates(
 @pytest.mark.parametrize(
     ("descriptor", "expected_notes"),
     [
-        ("COT*FLT", "Capital One Travel: Flight"),
-        ("COT*HTL *ABC123*", "Capital One Travel: Hotel"),
-        ("COT*CAR *ABC123*", "Capital One Travel: Rental Car"),
-        ("COT*PCH627-23633070MA", "Capital One Travel: Premier Collection Hotel"),
+        ("COT*FLT", "Flight"),
+        ("COT*HTL *ABC123*", "Hotel"),
+        ("COT*CAR *ABC123*", "Rental Car"),
+        ("COT*PCH627-23633070MA", "Premier Collection Hotel"),
     ],
 )
 def test_capital_one_travel_rules(
@@ -193,6 +193,43 @@ def test_capital_one_travel_rules(
         "payee": "Capital One Travel",
         "notes": expected_notes,
     }
+
+
+@pytest.mark.parametrize("source_field", ["original_name", "plaid_name"])
+@pytest.mark.parametrize(
+    ("descriptor", "expected_notes"),
+    [
+        (
+            "DEPOSIT DIVIDEND ANNUAL PERCENTAGE YIELD EARNED 4.30% "
+            "FOR PERIOD FROM 02/01/26 THRU 02/28/26",
+            "Interest: 4.30% APY (02/01/26 to 02/28/26)",
+        ),
+        (
+            "WITHDRAWAL ACH WISE US INC TYPE: WISE ID: 9453233521 "
+            "DATA: 91309152 CO: WISE US INC",
+            "Wise transfer: 91309152",
+        ),
+    ],
+)
+def test_additional_note_rules(
+    mock_transaction,
+    source_field,
+    descriptor,
+    expected_notes,
+):
+    mock_transaction.original_name = None
+    if source_field == "original_name":
+        mock_transaction.original_name = descriptor
+    else:
+        mock_transaction.plaid_metadata = {"name": descriptor}
+
+    updates = {}
+    for rule in EXTRACTION_RULES:
+        result = rule.apply(mock_transaction)
+        if result:
+            updates.update(result)
+
+    assert updates == {"notes": expected_notes}
 
 
 def test_extraction_rule_named_groups(mock_transaction):
