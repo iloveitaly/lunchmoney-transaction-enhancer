@@ -86,27 +86,36 @@ class TransactionEnhancer:
                     rule_match_counts[rule.name] += 1
                     updates.update(result)
 
-            if updates:
-                # Check if we are actually changing anything
-                is_changed = False
-                for field, val in updates.items():
-                    current_val = getattr(tx, field, None)
-                    if current_val != val:
-                        is_changed = True
-                        break
+            if not updates:
+                continue
 
-                if is_changed:
-                    log.info(
-                        "updating transaction",
-                        id=tx.id,
-                        updates=updates,
-                        original_payee=tx.payee,
-                        dry_run=self.dry_run,
-                    )
-                    if not self.dry_run:
-                        update_obj = TransactionUpdateObject(**updates)
-                        self.lunch.update_transaction(tx.id, update_obj)
-                    updated_count += 1
+            if "notes" in updates and tx.notes:
+                log.warning(
+                    "skipping note update because notes are already set",
+                    id=tx.id,
+                )
+                del updates["notes"]
+
+            if not updates:
+                continue
+
+            is_changed = any(
+                getattr(tx, field, None) != val for field, val in updates.items()
+            )
+            if not is_changed:
+                continue
+
+            log.info(
+                "updating transaction",
+                id=tx.id,
+                updates=updates,
+                original_payee=tx.payee,
+                dry_run=self.dry_run,
+            )
+            if not self.dry_run:
+                update_obj = TransactionUpdateObject(**updates)
+                self.lunch.update_transaction(tx.id, update_obj)
+            updated_count += 1
 
         log.info(
             "enhancement complete",

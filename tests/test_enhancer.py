@@ -17,7 +17,7 @@ def mock_transaction():
         amount=100.0,
         currency="usd",
         original_name="AIRBNB * HMFSTBA35Y",
-        notes="Old notes",
+        notes=None,
         status="cleared",
         is_pending=False,
         created_at="2024-01-01T00:00:00Z",
@@ -71,6 +71,71 @@ def test_transaction_enhancer_no_change_needed(mock_transaction):
 
         assert count == 0
         mock_lm.update_transaction.assert_not_called()
+
+
+def test_transaction_enhancer_preserves_existing_notes(mock_transaction):
+    mock_transaction.notes = "Old notes"
+    rule = ExtractionRule(
+        name="Airbnb Code",
+        source_field="original_name",
+        pattern=r"AIRBNB \* (?P<code>[A-Z0-9]{10})",
+        target_field="notes",
+        template="Code: {code}",
+    )
+
+    with patch("lunchmoney_transaction_enhancer.enhancer.LunchMoney") as mock_lm_class:
+        mock_lm = mock_lm_class.return_value
+        mock_lm.get_transactions.return_value = [mock_transaction]
+
+        enhancer = TransactionEnhancer(api_token="fake", rules=[rule])
+        with capture_logs() as cap_logs:
+            count = enhancer.enhance_transactions(
+                start_date=Instant.from_utc(2024, 1, 1)
+            )
+
+        assert count == 0
+        mock_lm.update_transaction.assert_not_called()
+        assert any(
+            log.get("event") == "skipping note update because notes are already set"
+            and log.get("log_level") == "warning"
+            for log in cap_logs
+        )
+
+
+def test_transaction_enhancer_preserves_notes_and_applies_other_updates(
+    mock_transaction,
+):
+    mock_transaction.notes = "Old notes"
+    rules = [
+        ExtractionRule(
+            name="Airbnb Code",
+            source_field="original_name",
+            pattern=r"AIRBNB \* (?P<code>[A-Z0-9]{10})",
+            target_field="notes",
+            template="Code: {code}",
+        ),
+        ExtractionRule(
+            name="Airbnb Payee",
+            source_field="original_name",
+            pattern=r"AIRBNB",
+            target_field="payee",
+            template="Airbnb stay",
+        ),
+    ]
+
+    with patch("lunchmoney_transaction_enhancer.enhancer.LunchMoney") as mock_lm_class:
+        mock_lm = mock_lm_class.return_value
+        mock_lm.get_transactions.return_value = [mock_transaction]
+
+        enhancer = TransactionEnhancer(api_token="fake", rules=rules)
+        count = enhancer.enhance_transactions(start_date=Instant.from_utc(2024, 1, 1))
+
+        assert count == 1
+        mock_lm.update_transaction.assert_called_once()
+        args, kwargs = mock_lm.update_transaction.call_args
+        assert args[0] == 123
+        assert args[1].payee == "Airbnb stay"
+        assert args[1].notes is None
 
 
 def test_extraction_rule_named_groups(mock_transaction):
