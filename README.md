@@ -49,8 +49,20 @@ uvx lunchmoney-transaction-enhancer --cron
 - Define regex rules against any transaction field (`payee`, `notes`, `original_name`) or Plaid metadata (`plaid_name`)
 - Extract named capture groups and format them into a target field using a template string
 - Skips updates when the target field already contains the correct value
+- Preserves existing transaction notes and logs a warning when a note enhancement is skipped
 - Persists a last-checked timestamp so each run only processes new transactions
 - Cron mode waits up to 8 hours for internet connectivity via exponential backoff, then pings a heartbeat URL (compatible with Healthchecks.io, Better Stack, etc.)
+
+## Supported Services
+
+| Service | Enhancement |
+| --- | --- |
+| Airbnb | Extracts the booking reference and adds it to the transaction notes |
+| Capital One Travel | Normalizes the payee and adds the purchase type—Flight, Hotel, Rental Car, or Premier Collection Hotel—to the transaction notes |
+| Alliant Credit Union | Extracts the interest APY and statement period and adds them to the transaction notes |
+| Wise | Extracts the transfer reference and adds it to the transaction notes |
+
+Note enhancements are applied only when the transaction does not already have a note. Other enhancements, such as Capital One Travel payee normalization, can still be applied independently.
 
 ## Configuring Rules
 
