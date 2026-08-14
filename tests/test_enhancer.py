@@ -5,6 +5,7 @@ from lunchable.models import TransactionObject
 from structlog.testing import capture_logs
 from whenever import Instant
 
+from lunchmoney_transaction_enhancer.config import EXTRACTION_RULES
 from lunchmoney_transaction_enhancer.enhancer import ExtractionRule, TransactionEnhancer
 
 
@@ -158,6 +159,40 @@ def test_transaction_enhancer_preserves_notes_and_applies_other_updates(
         assert args[0] == 123
         assert args[1].payee == "Airbnb stay"
         assert args[1].notes is None
+
+
+@pytest.mark.parametrize("source_field", ["original_name", "plaid_name"])
+@pytest.mark.parametrize(
+    ("descriptor", "expected_notes"),
+    [
+        ("COT*FLT", "Capital One Travel: Flight"),
+        ("COT*HTL *ABC123*", "Capital One Travel: Hotel"),
+        ("COT*CAR *ABC123*", "Capital One Travel: Rental Car"),
+        ("COT*PCH627-23633070MA", "Capital One Travel: Premier Collection Hotel"),
+    ],
+)
+def test_capital_one_travel_rules(
+    mock_transaction,
+    source_field,
+    descriptor,
+    expected_notes,
+):
+    mock_transaction.original_name = None
+    if source_field == "original_name":
+        mock_transaction.original_name = descriptor
+    else:
+        mock_transaction.plaid_metadata = {"name": descriptor}
+
+    updates = {}
+    for rule in EXTRACTION_RULES:
+        result = rule.apply(mock_transaction)
+        if result:
+            updates.update(result)
+
+    assert updates == {
+        "payee": "Capital One Travel",
+        "notes": expected_notes,
+    }
 
 
 def test_extraction_rule_named_groups(mock_transaction):
