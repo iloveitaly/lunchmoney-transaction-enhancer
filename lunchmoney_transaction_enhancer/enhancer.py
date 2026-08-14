@@ -1,4 +1,3 @@
-import datetime
 import re
 
 import structlog
@@ -8,6 +7,16 @@ from pydantic import BaseModel
 from whenever import Instant
 
 log = structlog.get_logger()
+
+
+def get_transaction_date_range(start_date: Instant) -> tuple[str, str]:
+    api_start_date = start_date.to_stdlib().date()
+    api_end_date = Instant.now().to_stdlib().date()
+
+    if api_end_date <= api_start_date:
+        api_end_date = start_date.add(hours=24).to_stdlib().date()
+
+    return api_start_date.isoformat(), api_end_date.isoformat()
 
 
 class ExtractionRule(BaseModel):
@@ -66,11 +75,10 @@ class TransactionEnhancer:
     def enhance_transactions(self, start_date: Instant):
         log.info("fetching transactions", start_date=start_date)
 
-        # LunchMoney API uses date, so we'll fetch from the date of start_date
-        # Whenever's Instant doesn't have a direct .date() but we can convert
+        api_start_date, api_end_date = get_transaction_date_range(start_date)
         transactions = self.lunch.get_transactions(
-            start_date=start_date.py_datetime().date(),
-            end_date=datetime.datetime.now(tz=datetime.UTC).date(),
+            start_date=api_start_date,
+            end_date=api_end_date,
         )
 
         log.info("fetched transactions", count=len(transactions))

@@ -51,6 +51,30 @@ def test_transaction_enhancer_updates(mock_transaction):
         assert args[1].notes == "Code: HMFSTBA35Y"
 
 
+def test_transaction_enhancer_uses_next_day_for_same_day_run():
+    start_date = Instant.from_utc(2024, 1, 1, 10)
+    current_time = Instant.from_utc(2024, 1, 1, 12)
+
+    with (
+        patch(
+            "lunchmoney_transaction_enhancer.enhancer.LunchMoney"
+        ) as mock_lm_class,
+        patch("lunchmoney_transaction_enhancer.enhancer.Instant") as mock_instant,
+    ):
+        mock_lm = mock_lm_class.return_value
+        mock_lm.get_transactions.return_value = []
+        mock_instant.now.return_value = current_time
+
+        enhancer = TransactionEnhancer(api_token="fake", rules=[])
+        count = enhancer.enhance_transactions(start_date=start_date)
+
+        assert count == 0
+        mock_lm.get_transactions.assert_called_once_with(
+            start_date="2024-01-01",
+            end_date="2024-01-02",
+        )
+
+
 def test_transaction_enhancer_no_change_needed(mock_transaction):
     # If the target field already matches the template, don't update
     mock_transaction.notes = "Code: HMFSTBA35Y"
