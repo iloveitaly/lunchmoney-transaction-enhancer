@@ -1,6 +1,6 @@
 [project]
 name = "lunchmoney-transaction-enhancer"
-version = "0.1.0"
+version = "0.2.0"
 description = "Enrich Lunch Money transactions using regex extraction rules"
 keywords = ["lunchmoney", "personal-finance", "plaid", "automation"]
 readme = "README.md"

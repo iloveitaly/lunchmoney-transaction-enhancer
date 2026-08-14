@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.2.0](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/compare/v0.1.0...v0.2.0) (2026-08-14)
+
+
+### Features
+
+* add cronfile and railpack configuration for scheduled tasks ([5fde480](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/commit/5fde480f21d7107becc05deedf220529abdb1b4c))
+* add extraction rules for Capital One Travel transactions ([e278352](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/commit/e278352102d7cf540fd3f85b90370ed0e6a5ff82))
+* **cli:** allow --lookback to override persisted state ([62ce0be](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/commit/62ce0bec7e6d1d62dc4fdcb960a157c08a58b2b8))
+* **config:** add extraction rules for Alliant interest and Wise transfers ([4d76545](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/commit/4d76545546e935af748e58c50582079e08a837d6))
+
+
+### Documentation
+
+* document supported services and note preservation behavior ([b6a3544](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/commit/b6a3544dcfc375e10cc15ac5b2cdea1492949b33))
+
 ## 0.1.0 (2026-08-14)
 
 
