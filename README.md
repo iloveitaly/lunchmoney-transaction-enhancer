@@ -9,9 +9,7 @@ Applies regex extraction rules to your [Lunch Money](https://lunchmoney.app) tra
 
 ## Installation
 
-```bash
-uv add lunchmoney-transaction-enhancer
-```
+Run the CLI with `uvx`; it downloads the package automatically when needed.
 
 Set your API key:
 
@@ -24,20 +22,20 @@ export LUNCH_MONEY_API_KEY=your_token_here
 ### Run manually
 
 ```bash
-uv run lunchmoney-transaction-enhancer
+uvx lunchmoney-transaction-enhancer
 ```
 
 ### Dry run (no writes)
 
 ```bash
-uv run lunchmoney-transaction-enhancer --dry-run
+uvx lunchmoney-transaction-enhancer --dry-run
 ```
 
 ### Run via cron
 
 ```bash
 # Ensure HEARTBEAT_URL is set in your environment
-uv run lunchmoney-transaction-enhancer --cron
+uvx lunchmoney-transaction-enhancer --cron
 ```
 
 ### Options
