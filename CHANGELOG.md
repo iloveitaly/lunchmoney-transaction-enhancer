@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/compare/v0.2.0...v0.2.1) (2026-09-11)
+
+
+### Bug Fixes
+
+* republish package to pypi ([#61](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/issues/61)) ([cbd9f79](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/commit/cbd9f7970edd823489731a4d4695b48a336574e4))
+
 ## [0.2.0](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/compare/v0.1.0...v0.2.0) (2026-08-14)
 
 
