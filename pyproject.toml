@@ -4,7 +4,14 @@ version = "0.2.1"
 description = "Enrich Lunch Money transactions using regex extraction rules"
 keywords = ["lunchmoney", "personal-finance", "plaid", "automation"]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 dependencies = [
     "click>=8.4.2",
     "lunchable>=1.4.3",
@@ -24,7 +31,7 @@ lunchmoney-transaction-enhancer = "lunchmoney_transaction_enhancer:main"
 
 
 [build-system]
-requires = ["uv_build>=0.12.4,<0.13"]
+requires = ["uv_build>=0.11.0,<0.14"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
@@ -39,6 +46,7 @@ dev = [
     "coverage>=7.15.4",
     "pytest-cov>=7.0.0",
     "covdefaults>=2.3.0",
+    "beautiful-traceback>=1.0.2",
 ]
 
 [tool.pyright]
