@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/compare/v0.2.1...v0.2.2) (2026-09-15)
+
+
+### Bug Fixes
+
+* trigger release for docker publish ([4c8fb04](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/commit/4c8fb04fa85547b0eaa38cdfe4dd8b47c5a00d63))
+
 ## [0.2.1](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/compare/v0.2.0...v0.2.1) (2026-09-14)
 
 
