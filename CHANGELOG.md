@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/compare/v0.2.2...v0.3.0) (2026-10-01)
+
+
+### Features
+
+* migrate to lunchmoney-python SDK ([6351db2](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/commit/6351db234c84dc9c1e94d3cf33ecf838a4613b95))
+
+
+### Bug Fixes
+
+* resolve lint formatting and restore pyproject version ([7756b63](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/commit/7756b6373677b7e5fb23211fbf0dae9834905170))
+
 ## [0.2.2](https://github.com/iloveitaly/lunchmoney-transaction-enhancer/compare/v0.2.1...v0.2.2) (2026-09-15)
 
 
