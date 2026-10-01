@@ -1,7 +1,7 @@
 [project]
 name = "lunchmoney-transaction-enhancer"
-version = "0.2.2"
-description = "Enrich Lunch Money transactions using regex extraction rules"
+version = "0.2.1"
+description = "Enrich Lunch Money transaction payees and notes using configurable regex extraction rules"
 keywords = ["lunchmoney", "personal-finance", "plaid", "automation"]
 readme = "README.md"
 requires-python = ">=3.12"
@@ -14,7 +14,7 @@ classifiers = [
 ]
 dependencies = [
     "click>=8.4.2",
-    "lunchable>=1.4.3",
+    "lunchmoney-python>=2.27.0",
     "requests>=2.32.5",
     "structlog>=26.1.0",
     "structlog-config>=0.10.0",

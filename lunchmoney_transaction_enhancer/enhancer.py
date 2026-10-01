@@ -1,22 +1,30 @@
 import re
 
+from datetime import date
+
 import structlog
-from lunchable import LunchMoney
-from lunchable.models import TransactionObject, TransactionUpdateObject
+from lunchmoney import (
+    ApiClient,
+    Configuration,
+    TransactionObject,
+    TransactionsApi,
+    TransactionsBulkApi,
+    UpdateTransactionObject,
+)
 from pydantic import BaseModel
 from whenever import Instant
 
 log = structlog.get_logger()
 
 
-def get_transaction_date_range(start_date: Instant) -> tuple[str, str]:
+def get_transaction_date_range(start_date: Instant) -> tuple[date, date]:
     api_start_date = start_date.to_stdlib().date()
     api_end_date = Instant.now().to_stdlib().date()
 
     if api_end_date <= api_start_date:
         api_end_date = start_date.add(hours=24).to_stdlib().date()
 
-    return api_start_date.isoformat(), api_end_date.isoformat()
+    return api_start_date, api_end_date
 
 
 class ExtractionRule(BaseModel):
@@ -29,7 +37,7 @@ class ExtractionRule(BaseModel):
     def _get_source_val(self, transaction: TransactionObject) -> str | None:
         if self.source_field == "plaid_name":
             metadata = transaction.plaid_metadata
-            if not metadata:
+            if not isinstance(metadata, dict):
                 return None
             return metadata.get("name")
         return getattr(transaction, self.source_field, None)
@@ -66,20 +74,54 @@ class ExtractionRule(BaseModel):
 
 class TransactionEnhancer:
     def __init__(
-        self, api_token: str, rules: list[ExtractionRule], dry_run: bool = False
+        self,
+        api_token: str,
+        rules: list[ExtractionRule],
+        dry_run: bool = False,
+        transactions_bulk_api: TransactionsBulkApi | None = None,
+        transactions_api: TransactionsApi | None = None,
     ):
-        self.lunch = LunchMoney(access_token=api_token)
+        if transactions_bulk_api is None or transactions_api is None:
+            configuration = Configuration(access_token=api_token)
+            api_client = ApiClient(configuration)
+            transactions_bulk_api = transactions_bulk_api or TransactionsBulkApi(api_client)
+            transactions_api = transactions_api or TransactionsApi(api_client)
+
+        self.transactions_bulk_api = transactions_bulk_api
+        self.transactions_api = transactions_api
         self.rules = rules
         self.dry_run = dry_run
+
+    def _fetch_transactions(
+        self, start_date: date, end_date: date
+    ) -> list[TransactionObject]:
+        transactions: list[TransactionObject] = []
+        offset = 0
+        limit = 1000
+
+        while True:
+            response = self.transactions_bulk_api.get_all_transactions(
+                start_date=start_date,
+                end_date=end_date,
+                include_metadata=True,
+                limit=limit,
+                offset=offset,
+            )
+            if response.transactions:
+                transactions.extend(response.transactions)
+
+            if not response.has_more or not response.transactions:
+                break
+
+            offset += len(response.transactions)
+
+        return transactions
 
     def enhance_transactions(self, start_date: Instant):
         log.info("fetching transactions", start_date=start_date)
 
         api_start_date, api_end_date = get_transaction_date_range(start_date)
-        transactions = self.lunch.get_transactions(
-            start_date=api_start_date,
-            end_date=api_end_date,
-        )
+        transactions = self._fetch_transactions(api_start_date, api_end_date)
 
         log.info("fetched transactions", count=len(transactions))
 
@@ -121,8 +163,8 @@ class TransactionEnhancer:
                 dry_run=self.dry_run,
             )
             if not self.dry_run:
-                update_obj = TransactionUpdateObject(**updates)
-                self.lunch.update_transaction(tx.id, update_obj)
+                update_obj = UpdateTransactionObject(**updates)
+                self.transactions_api.update_transaction(tx.id, update_obj)
             updated_count += 1
 
         log.info(

@@ -78,6 +78,12 @@ ExtractionRule(
 )
 ```
 
+## Privacy & Data Handling
+
+- **Account data fetched:** Only transaction objects (payee, notes, amount, date, original name, and Plaid metadata) within the lookback window are retrieved via the Lunch Money API. Account balances, credentials, and other non-transaction data are never requested.
+- **Local data retention:** Only a single timestamp (`data/last_checked.txt`) is persisted locally to track state between runs. No transactions or financial details are stored on disk.
+- **Logging:** Transaction update logs include transaction IDs, payee names, and modified fields. Payee names and note contents may be visible in standard output or centralized log aggregators.
+
 ## [MIT License](LICENSE.md)
 
 ---
