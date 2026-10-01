@@ -1,5 +1,4 @@
 import re
-
 from datetime import date
 
 import structlog
@@ -84,7 +83,9 @@ class TransactionEnhancer:
         if transactions_bulk_api is None or transactions_api is None:
             configuration = Configuration(access_token=api_token)
             api_client = ApiClient(configuration)
-            transactions_bulk_api = transactions_bulk_api or TransactionsBulkApi(api_client)
+            transactions_bulk_api = transactions_bulk_api or TransactionsBulkApi(
+                api_client
+            )
             transactions_api = transactions_api or TransactionsApi(api_client)
 
         self.transactions_bulk_api = transactions_bulk_api

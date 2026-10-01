@@ -157,9 +157,7 @@ def test_transaction_enhancer_preserves_existing_notes(mock_apis, mock_transacti
 
     enhancer = TransactionEnhancer(api_token="fake", rules=[rule])
     with capture_logs() as cap_logs:
-        count = enhancer.enhance_transactions(
-            start_date=Instant.from_utc(2024, 1, 1)
-        )
+        count = enhancer.enhance_transactions(start_date=Instant.from_utc(2024, 1, 1))
 
     assert count == 0
     mock_tx.update_transaction.assert_not_called()
